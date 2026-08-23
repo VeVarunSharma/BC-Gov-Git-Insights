@@ -1,0 +1,77 @@
+name: Validate infrastructure
+
+on:
+  pull_request:
+    paths:
+      - "infra/**"
+      - ".github/workflows/infra-validate.yml"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Build Bicep
+        run: az bicep build --file infra/main.bicep
+      - name: Validate parameter JSON
+        run: jq empty infra/main.parameters.json
+
+  what-if:
+    if: github.event_name == 'workflow_dispatch'
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: azure/login@8216e11d8cd9b42fe925c852af8e76311ff067ac # v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Require immutable image digests
+        env:
+          WEB_IMAGE: ${{ vars.GHCR_WEB_IMAGE }}
+          METADATA_IMAGE: ${{ vars.GHCR_METADATA_JOB_IMAGE }}
+          SCAN_IMAGE: ${{ vars.GHCR_SCAN_JOB_IMAGE }}
+          SYNTHESIS_IMAGE: ${{ vars.GHCR_SYNTHESIS_JOB_IMAGE }}
+        run: |
+          for image in "$WEB_IMAGE" "$METADATA_IMAGE" "$SCAN_IMAGE" "$SYNTHESIS_IMAGE"; do
+            case "$image" in
+              *@sha256:*) ;;
+              *) echo "Image must be pinned by digest: $image" >&2; exit 1 ;;
+            esac
+          done
+      - name: Run subscription what-if
+        run: >
+          az deployment sub what-if
+          --name "git-insights-${{ github.run_id }}"
+          --location "${{ vars.AZURE_LOCATION || 'canadacentral' }}"
+          --template-file infra/main.bicep
+          --parameters @infra/main.parameters.json
+          webImage="${{ vars.GHCR_WEB_IMAGE }}"
+          metadataJobImage="${{ vars.GHCR_METADATA_JOB_IMAGE }}"
+          scanJobImage="${{ vars.GHCR_SCAN_JOB_IMAGE }}"
+          synthesisJobImage="${{ vars.GHCR_SYNTHESIS_JOB_IMAGE }}"
+          configureEntraAuth="${{ vars.CONFIGURE_ENTRA_AUTH || 'false' }}"
+          entraClientId="${{ vars.ENTRA_WEB_CLIENT_ID }}"
+          entraClientSecretUrl="${{ vars.ENTRA_CLIENT_SECRET_URL }}"
+          allowedTenantIdsCsv="${{ vars.ALLOWED_TENANT_IDS }}"
+          configureGitHubOAuth="${{ vars.CONFIGURE_SOURCE_OAUTH || 'false' }}"
+          githubOAuthClientId="${{ vars.SOURCE_OAUTH_CLIENT_ID }}"
+          githubOAuthClientSecretUrl="${{ vars.SOURCE_OAUTH_CLIENT_SECRET_URL }}"
+          enableScheduledJobs="${{ vars.ENABLE_SCHEDULED_JOBS || 'false' }}"
+          deployFoundryModel="${{ vars.DEPLOY_FOUNDRY_MODEL || 'false' }}"
+          foundryModelDeploymentName="${{ vars.FOUNDRY_MODEL_DEPLOYMENT_NAME }}"
+          foundryModelName="${{ vars.FOUNDRY_MODEL_NAME }}"
+          foundryModelVersion="${{ vars.FOUNDRY_MODEL_VERSION }}"
+          foundryModelFormat="${{ vars.FOUNDRY_MODEL_FORMAT || 'OpenAI' }}"
+          foundryModelSkuName="${{ vars.FOUNDRY_MODEL_SKU || 'GlobalStandard' }}"
+          foundryModelCapacity="${{ vars.FOUNDRY_MODEL_CAPACITY || '1' }}"

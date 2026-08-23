@@ -1,0 +1,23 @@
+{
+  "name": "@git-insights/ai",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@azure/ai-projects": "^2.5.0",
+    "@azure/identity": "^4.13.2",
+    "@git-insights/contracts": "workspace:*",
+    "zod": "^4.1.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}

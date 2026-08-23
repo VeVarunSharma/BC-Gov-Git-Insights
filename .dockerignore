@@ -1,0 +1,13 @@
+.azure
+.git
+.github
+**/.next
+**/coverage
+**/dist
+**/node_modules
+.playwright-mcp
+git-insights-dashboard.png
+playwright-report
+test-results
+tmp
+*.log
