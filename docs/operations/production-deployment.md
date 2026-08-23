@@ -22,21 +22,22 @@ manual.
 Create one protected GitHub environment named `production`. Require reviewers
 for deployment and configure these variables:
 
-| Variable                   | Phase 1 value                             | Purpose                                      |
-| -------------------------- | ----------------------------------------- | -------------------------------------------- |
-| `AZURE_CLIENT_ID`          | OIDC application client ID                | Deployment identity                          |
-| `AZURE_TENANT_ID` | `1cf61a60-a877-46a7-86bc-a8f76b6ab441` | MCAPS deployment tenant |
-| `AZURE_SUBSCRIPTION_ID` | `ad92e163-a85e-40cc-bb50-054b0b8197a8` | User-selected MCAPS subscription |
-| `AZURE_LOCATION`           | `canadacentral`                           | Single production region                     |
-| `GHCR_WEB_IMAGE`           | `ghcr.io/...@sha256:...`                  | Immutable web image                          |
-| `GHCR_METADATA_JOB_IMAGE`  | `ghcr.io/...@sha256:...`                  | Immutable collector image                    |
-| `GHCR_SCAN_JOB_IMAGE`      | `ghcr.io/...@sha256:...`                  | Immutable scanner image                      |
-| `GHCR_SYNTHESIS_JOB_IMAGE` | `ghcr.io/...@sha256:...`                  | Immutable synthesizer image                  |
-| `CONFIGURE_ENTRA_AUTH`     | `false`                                   | Keeps web ingress private until auth exists  |
-| `CONFIGURE_SOURCE_OAUTH`   | `false`                                   | Delays source secret binding                 |
-| `ENABLE_SCHEDULED_JOBS`    | `false`                                   | Starts jobs manually during bootstrap        |
-| `DEPLOY_FOUNDRY_MODEL`     | `false`                                   | Delays model deployment until quota is known |
-| `ALLOWED_TENANT_IDS` | MCAPS, Microsoft, BC Gov, and Alberta tenant IDs | Application authorization allowlist |
+| Variable                   | Phase 1 value                                    | Purpose                                      |
+| -------------------------- | ------------------------------------------------ | -------------------------------------------- |
+| `AZURE_CLIENT_ID`          | OIDC application client ID                       | Deployment identity                          |
+| `AZURE_TENANT_ID`          | `1cf61a60-a877-46a7-86bc-a8f76b6ab441`           | MCAPS deployment tenant                      |
+| `AZURE_SUBSCRIPTION_ID`    | `ad92e163-a85e-40cc-bb50-054b0b8197a8`           | User-selected MCAPS subscription             |
+| `AZURE_LOCATION`           | `canadacentral`                                  | Single production region                     |
+| `GHCR_WEB_IMAGE`           | `ghcr.io/...@sha256:...`                         | Immutable web image                          |
+| `GHCR_METADATA_JOB_IMAGE`  | `ghcr.io/...@sha256:...`                         | Immutable collector image                    |
+| `GHCR_SCAN_JOB_IMAGE`      | `ghcr.io/...@sha256:...`                         | Immutable scanner image                      |
+| `GHCR_SYNTHESIS_JOB_IMAGE` | `ghcr.io/...@sha256:...`                         | Immutable synthesizer image                  |
+| `CONFIGURE_ENTRA_AUTH`     | `false`                                          | Keeps web ingress private until auth exists  |
+| `PUBLIC_DASHBOARD`         | `true`                                           | v1 anonymous dashboard with external ingress |
+| `CONFIGURE_SOURCE_OAUTH`   | `false`                                          | Delays source secret binding                 |
+| `ENABLE_SCHEDULED_JOBS`    | `false`                                          | Starts jobs manually during bootstrap        |
+| `DEPLOY_FOUNDRY_MODEL`     | `false`                                          | Delays model deployment until quota is known |
+| `ALLOWED_TENANT_IDS`       | MCAPS, Microsoft, BC Gov, and Alberta tenant IDs | Application authorization allowlist          |
 
 The deployment workflow rejects image tags that are not pinned with
 `@sha256:`.
@@ -51,7 +52,18 @@ The deployment workflow rejects image tags that are not pinned with
 4. Run the manual database-bootstrap job after the PostgreSQL server is ready.
 
 The web Container App has no external ingress while Entra authentication is
-disabled.
+disabled, unless `PUBLIC_DASHBOARD` is `true`.
+
+### v1 public dashboard
+
+v1 ships without sign-in. Setting `PUBLIC_DASHBOARD=true` both enables external
+ingress and makes the application serve an anonymous read-only viewer, so no
+Entra registration or Key Vault secret is needed to reach the dashboard. Phase 2
+below is only required when you want authenticated access.
+
+This is safe only while the dashboard serves public repository metadata. Unset
+`PUBLIC_DASHBOARD` and complete Phase 2 before surfacing security findings. See
+`docs/security/threat-model.md`.
 
 ## Phase 2: identity and collection
 

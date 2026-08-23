@@ -40,6 +40,9 @@ param synthesisJobName string = 'caj-opengit-ai-prod'
 @description('Enable Azure Container Apps built-in Microsoft Entra authentication after the multitenant app and Key Vault secret exist.')
 param configureEntraAuth bool = false
 
+@description('Serve the dashboard anonymously with external ingress. v1 only: unset before security findings are surfaced in the UI. See docs/security/threat-model.md.')
+param publicDashboard bool = false
+
 @description('Client ID of the multitenant Entra web application.')
 param entraClientId string = ''
 
@@ -303,6 +306,7 @@ module compute './modules/container-workloads.bicep' = {
     databaseAdminIdentityName: databaseAdminIdentityName
     databaseBootstrapJobName: databaseBootstrapJobName
     configureEntraAuth: configureEntraAuth
+    publicDashboard: publicDashboard
     containerAppEnvironmentId: containerEnvironment.outputs.id
     entraClientId: entraClientId
     entraClientSecretUrl: entraClientSecretUrl

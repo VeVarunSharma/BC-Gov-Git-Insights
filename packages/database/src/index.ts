@@ -28,14 +28,38 @@ export function getDatabaseCredential(): TokenCredential {
 }
 
 export function createDatabasePool(): Pool {
+  const host = requireEnvironment("PGHOST");
+  const port = Number(process.env.PGPORT ?? "5432");
+  const database = requireEnvironment("PGDATABASE");
+  const user = requireEnvironment("PGUSER");
+  const max = Number(process.env.PGPOOL_MAX ?? "5");
+
+  // Local development against a containerized Postgres, which has neither an
+  // Entra token endpoint nor a trusted certificate. Refused in production so
+  // deployed workloads can only ever use managed identity over TLS.
+  const localPassword = process.env.PGPASSWORD;
+  if (localPassword && process.env.NODE_ENV !== "production") {
+    return new Pool({
+      host,
+      port,
+      database,
+      user,
+      password: localPassword,
+      max,
+      idleTimeoutMillis: 30_000,
+      connectionTimeoutMillis: 10_000,
+      ssl: false,
+    });
+  }
+
   const credential = getDatabaseCredential();
   return new Pool({
-    host: requireEnvironment("PGHOST"),
-    port: Number(process.env.PGPORT ?? "5432"),
-    database: requireEnvironment("PGDATABASE"),
-    user: requireEnvironment("PGUSER"),
+    host,
+    port,
+    database,
+    user,
     password: entraTokenProvider(credential),
-    max: Number(process.env.PGPOOL_MAX ?? "5"),
+    max,
     idleTimeoutMillis: 30_000,
     connectionTimeoutMillis: 10_000,
     ssl: {

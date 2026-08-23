@@ -17,6 +17,21 @@ export interface AuthorizedPrincipal {
   roles: string[];
 }
 
+// v1 ships the dashboard unauthenticated because it serves only public
+// repository metadata. Unset this the moment security findings reach the UI:
+// an aggregated, severity-ranked view of unremediated weaknesses is sensitive
+// even when each underlying repository is public.
+const publicViewerPrincipal: AuthorizedPrincipal = {
+  tenantId: "public",
+  objectId: "public-dashboard",
+  displayName: "Public viewer",
+  roles: ["viewer"],
+};
+
+export function isPublicDashboardEnabled(): boolean {
+  return process.env.PUBLIC_DASHBOARD === "true";
+}
+
 const tenantClaimTypes = new Set([
   "tid",
   "http://schemas.microsoft.com/identity/claims/tenantid",
@@ -120,6 +135,11 @@ function validateTokenClaims(
 export function authorizeHeaders(
   headers: Pick<Headers, "get">,
 ): AuthorizedPrincipal | null {
+  // Checked before any header parsing so public mode cannot be broken by a
+  // malformed or hostile x-ms-client-principal header.
+  if (isPublicDashboardEnabled()) {
+    return publicViewerPrincipal;
+  }
   if (
     process.env.NODE_ENV === "production" &&
     process.env.EASY_AUTH_ENABLED !== "true"

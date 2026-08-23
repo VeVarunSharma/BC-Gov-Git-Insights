@@ -5,7 +5,10 @@ import {
   ManagedIdentityCredential,
   type TokenCredential,
 } from "@azure/identity";
-import { BlobServiceClient } from "@azure/storage-blob";
+import {
+  BlobServiceClient,
+  StorageSharedKeyCredential,
+} from "@azure/storage-blob";
 
 export interface StoredArtifact {
   container: string;
@@ -97,13 +100,30 @@ export class AzureBlobEvidenceWriter implements EvidenceStore {
     if (!/^[a-z0-9]{3,24}$/.test(accountName)) {
       throw new Error("Azure Storage account name is invalid.");
     }
+    const clientOptions = {
+      uploadContentChecksumAlgorithm: "StorageCrc64",
+      downloadContentChecksumAlgorithm: "StorageCrc64",
+    } as const;
+
+    // Local development against Azurite, which serves plain HTTP from a custom
+    // endpoint and authenticates with a shared key rather than Entra. Refused
+    // in production so deployed workloads only ever use managed identity.
+    // Azurite cannot serve StorageCrc64 structured-message bodies, so the
+    // checksum options are intentionally omitted on this path only.
+    const localEndpoint = process.env.AZURE_STORAGE_BLOB_ENDPOINT;
+    const localKey = process.env.AZURE_STORAGE_KEY;
+    if (localEndpoint && localKey && process.env.NODE_ENV !== "production") {
+      this.client = new BlobServiceClient(
+        `${localEndpoint.replace(/\/+$/, "")}/${accountName}`,
+        new StorageSharedKeyCredential(accountName, localKey),
+      );
+      return;
+    }
+
     this.client = new BlobServiceClient(
       `https://${accountName}.blob.core.windows.net`,
       credential,
-      {
-        uploadContentChecksumAlgorithm: "StorageCrc64",
-        downloadContentChecksumAlgorithm: "StorageCrc64",
-      },
+      clientOptions,
     );
   }
 
