@@ -1,0 +1,54 @@
+name: Publish container images
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - ".dockerignore"
+      - ".npmrc"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "tsconfig.base.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - web
+          - collector
+          - scanner
+          - synthesizer
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Sign in to GHCR
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "$GHCR_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+      - name: Build image
+        env:
+          TARGET: ${{ matrix.target }}
+        run: |
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          image="ghcr.io/${owner}/bc-gov-git-insights-${TARGET}"
+          docker build \
+            --file "apps/${TARGET}/Dockerfile" \
+            --label "org.opencontainers.image.revision=${GITHUB_SHA}" \
+            --label "org.opencontainers.image.source=https://github.com/${GITHUB_REPOSITORY}" \
+            --tag "${image}:${GITHUB_SHA}" \
+            .
+          docker push "${image}:${GITHUB_SHA}"
+          digest="$(docker buildx imagetools inspect "${image}:${GITHUB_SHA}" --format '{{json .Manifest.Digest}}' | tr -d '"')"
+          printf 'Published %s@%s\n' "$image" "$digest" >> "$GITHUB_STEP_SUMMARY"

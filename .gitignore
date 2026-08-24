@@ -1,0 +1,17 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+.next
+.turbo
+.vercel
+.azure/*/
+coverage
+dist
+infra/main.json
+node_modules
+out
+playwright-report
+test-results
+tmp
+*.log

@@ -1,0 +1,23 @@
+{
+  "name": "@git-insights/collector",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "collect": "tsx src/index.ts",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@git-insights/contracts": "workspace:*",
+    "@git-insights/database": "workspace:*",
+    "@git-insights/evidence": "workspace:*",
+    "@git-insights/github": "workspace:*",
+    "tsx": "^4.20.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}
