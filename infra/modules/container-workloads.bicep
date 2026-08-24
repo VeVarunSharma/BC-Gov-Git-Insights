@@ -75,11 +75,11 @@ var webRuntimeEnvironment = [
   }
   {
     name: 'EASY_AUTH_ENABLED'
-    value: string(configureEntraAuth)
+    value: toLower(string(configureEntraAuth))
   }
   {
     name: 'PUBLIC_DASHBOARD'
-    value: string(publicDashboard)
+    value: toLower(string(publicDashboard))
   }
   {
     name: 'PGHOST'
