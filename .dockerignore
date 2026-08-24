@@ -2,6 +2,7 @@
 .git
 .github
 **/.next
+**/.vite
 **/coverage
 **/dist
 **/node_modules

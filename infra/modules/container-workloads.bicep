@@ -3,6 +3,7 @@ targetScope = 'resourceGroup'
 param applicationInsightsConnectionString string
 param allowedTenantIdsCsv string
 param configureEntraAuth bool
+param publicDashboard bool = false
 param containerAppEnvironmentId string
 param entraClientId string
 param entraClientSecretUrl string
@@ -74,7 +75,11 @@ var webRuntimeEnvironment = [
   }
   {
     name: 'EASY_AUTH_ENABLED'
-    value: string(configureEntraAuth)
+    value: toLower(string(configureEntraAuth))
+  }
+  {
+    name: 'PUBLIC_DASHBOARD'
+    value: toLower(string(publicDashboard))
   }
   {
     name: 'PGHOST'
@@ -193,7 +198,7 @@ resource webApp 'Microsoft.App/containerApps@2025-01-01' = {
     configuration: {
       activeRevisionsMode: 'Single'
       ingress: {
-        external: configureEntraAuth
+        external: configureEntraAuth || publicDashboard
         targetPort: 3000
         traffic: [
           {

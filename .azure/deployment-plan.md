@@ -18,18 +18,18 @@ The user approved the detailed implementation plan in this session before execut
 
 ## 2. Requirements
 
-| Attribute             | Value                                                                                                                                                   |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Classification        | Production                                                                                                                                              |
-| Scale                 | Small, initial 100-repository cohort and fewer than 1,000 dashboard users                                                                               |
-| Budget                | Balanced production; resilient data services and one always-ready web replica                                                                           |
-| Subscription          | ME-MngEnvMCAP744360-sharmave-1 (`ad92e163-a85e-40cc-bb50-054b0b8197a8`) - explicitly selected by the user for the single production environment              |
-| Location              | Canada Central - explicitly approved by the user and parameterized                                                                                      |
-| Data residency        | Primary resources and persisted data in Canada Central                                                                                                  |
-| Source boundary       | Public, read-only GitHub REST and git clone access; no BC Gov installation or writes                                                                    |
-| Dashboard access      | Microsoft Entra multitenant sign-in with exact tenant-ID allowlisting                                                                                   |
-| Security detail       | Evidence-backed defensive findings only; no secret values or exploit instructions                                                                       |
-| Contributor analytics | Repository/portfolio aggregate only                                                                                                                     |
+| Attribute             | Value                                                                                                                                           |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Classification        | Production                                                                                                                                      |
+| Scale                 | Small, initial 100-repository cohort and fewer than 1,000 dashboard users                                                                       |
+| Budget                | Balanced production; resilient data services and one always-ready web replica                                                                   |
+| Subscription          | ME-MngEnvMCAP744360-sharmave-1 (`ad92e163-a85e-40cc-bb50-054b0b8197a8`) - explicitly selected by the user for the single production environment |
+| Location              | Canada Central - explicitly approved by the user and parameterized                                                                              |
+| Data residency        | Primary resources and persisted data in Canada Central                                                                                          |
+| Source boundary       | Public, read-only GitHub REST and git clone access; no BC Gov installation or writes                                                            |
+| Dashboard access      | Microsoft Entra multitenant sign-in with exact tenant-ID allowlisting                                                                           |
+| Security detail       | Evidence-backed defensive findings only; no secret values or exploit instructions                                                               |
+| Contributor analytics | Repository/portfolio aggregate only                                                                                                             |
 
 ### Allowed identity tenants
 
@@ -38,7 +38,7 @@ The user approved the detailed implementation plan in this session before execut
 | Microsoft    | `72f988bf-86f1-41af-91ab-2d7cd011db47` |
 | BC Gov       | `6fdb5200-3d0d-4a8a-b036-d3685e359adc` |
 | Alberta      | `2bb51c06-af9b-42c5-8bf5-3c3b7b10850b` |
-| MCAPS     | `1cf61a60-a877-46a7-86bc-a8f76b6ab441` |
+| MCAPS        | `1cf61a60-a877-46a7-86bc-a8f76b6ab441` |
 
 The application must validate token signature, issuer, audience, expiration, and `tid`. Email suffixes are not authorization boundaries.
 
@@ -296,30 +296,30 @@ Primary sources include Microsoft Learn service documentation, current Bicep sch
 
 ## 13. Validation Proof
 
-| Check                            | Command                                                                         | Result                                                                                                            | Timestamp                 |
-| -------------------------------- | ------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| Formatting                       | `pnpm format:check`                                                             | Pass                                                                                                              | 2026-08-22T15:59:00-07:00 |
-| Lint                             | `pnpm lint`                                                                     | Pass                                                                                                              | 2026-08-22T15:59:00-07:00 |
-| TypeScript                       | `pnpm typecheck`                                                                | Pass                                                                                                              | 2026-08-22T15:59:00-07:00 |
-| Tests                            | `pnpm test`                                                                     | Pass                                                                                                              | 2026-08-22T15:59:00-07:00 |
-| Application build                | `pnpm build`                                                                    | Pass                                                                                                              | 2026-08-22T15:59:00-07:00 |
-| Bicep compilation                | `az bicep build --file infra/main.bicep --stdout`                               | Pass                                                                                                              | 2026-08-22T16:03:00-07:00 |
-| Bicep lint                       | `az bicep lint --file infra/main.bicep`                                         | Pass                                                                                                              | 2026-08-22T16:03:00-07:00 |
-| Workflow lint                    | `actionlint`                                                                    | Pass                                                                                                              | 2026-08-22T15:59:00-07:00 |
-| Infrastructure plan dependencies | `jq` uniqueness and dependency check                                            | Pass                                                                                                              | 2026-08-22T15:59:00-07:00 |
-| Docker images                    | Build web, collector, scanner, and synthesizer images                           | Pass                                                                                                              | 2026-08-22T16:02:00-07:00 |
-| Container smoke tests            | Web fail-closed health/auth plus collector/scanner/synthesizer artifact checks  | Pass                                                                                                              | 2026-08-22T16:02:00-07:00 |
-| Azure Policy                     | `policy_assignment_list` and classic-resource deny definition review            | Pass: inherited MCAPS policies reviewed; classic-resource deny does not match planned resource types              | 2026-08-23T08:13:00-07:00 |
-| Resource inventory               | Azure Resource Graph count in Canada Central                                    | Pass: no existing planned resource types returned                                                                 | 2026-08-23T08:13:00-07:00 |
-| Static RBAC                      | Review all `Microsoft.Authorization/roleAssignments` against runtime operations | Pass: container-scoped Storage roles, Key Vault secret readers, and synthesis-only Foundry role                   | 2026-08-22T16:03:00-07:00 |
-| Azure CLI authentication        | `az account show`                                                                   | Pass: MCAPS subscription `ad92e163-a85e-40cc-bb50-054b0b8197a8`, tenant `1cf61a60-a877-46a7-86bc-a8f76b6ab441` | 2026-08-23T08:12:00-07:00 |
-| Container Apps quota            | `az quota show/usage show ManagedEnvironmentCount`                                  | Pass: limit 50, usage 0                                                                                            | 2026-08-23T08:14:00-07:00 |
-| Storage quota                   | `az quota list/usage show Microsoft.Storage`                                        | Pass: limit 250, usage 0                                                                                           | 2026-08-23T08:15:00-07:00 |
-| PostgreSQL capability           | `az postgres flexible-server list-skus --location canadacentral`                    | Pass: D2ds v5, zone HA, geo backup, and combined zone HA/geo backup supported                                      | 2026-08-23T08:16:00-07:00 |
-| Foundry model quota             | Model-specific capacity                                                             | Deferred: phase-1 deployment has `deployFoundryModel=false`                                                        | 2026-08-23T08:17:00-07:00 |
-| Image publication                | Public GHCR digest references                                                   | Blocked until implementation is committed and image workflow runs                                                 | 2026-08-22T16:04:00-07:00 |
-| ARM template validation         | `az deployment sub validate --subscription ad92...`                                 | Pass: provisioning state `Succeeded`                                                                               | 2026-08-23T08:18:00-07:00 |
-| Production what-if              | `az deployment sub what-if --subscription ad92... --result-format ResourceIdOnly`  | Pass: create-only preview; no modify/delete; dynamic RBAC/admin resources reported as expected unsupported analysis | 2026-08-23T08:18:00-07:00 |
+| Check                            | Command                                                                           | Result                                                                                                              | Timestamp                 |
+| -------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| Formatting                       | `pnpm format:check`                                                               | Pass                                                                                                                | 2026-08-22T15:59:00-07:00 |
+| Lint                             | `pnpm lint`                                                                       | Pass                                                                                                                | 2026-08-22T15:59:00-07:00 |
+| TypeScript                       | `pnpm typecheck`                                                                  | Pass                                                                                                                | 2026-08-22T15:59:00-07:00 |
+| Tests                            | `pnpm test`                                                                       | Pass                                                                                                                | 2026-08-22T15:59:00-07:00 |
+| Application build                | `pnpm build`                                                                      | Pass                                                                                                                | 2026-08-22T15:59:00-07:00 |
+| Bicep compilation                | `az bicep build --file infra/main.bicep --stdout`                                 | Pass                                                                                                                | 2026-08-22T16:03:00-07:00 |
+| Bicep lint                       | `az bicep lint --file infra/main.bicep`                                           | Pass                                                                                                                | 2026-08-22T16:03:00-07:00 |
+| Workflow lint                    | `actionlint`                                                                      | Pass                                                                                                                | 2026-08-22T15:59:00-07:00 |
+| Infrastructure plan dependencies | `jq` uniqueness and dependency check                                              | Pass                                                                                                                | 2026-08-22T15:59:00-07:00 |
+| Docker images                    | Build web, collector, scanner, and synthesizer images                             | Pass                                                                                                                | 2026-08-22T16:02:00-07:00 |
+| Container smoke tests            | Web fail-closed health/auth plus collector/scanner/synthesizer artifact checks    | Pass                                                                                                                | 2026-08-22T16:02:00-07:00 |
+| Azure Policy                     | `policy_assignment_list` and classic-resource deny definition review              | Pass: inherited MCAPS policies reviewed; classic-resource deny does not match planned resource types                | 2026-08-23T08:13:00-07:00 |
+| Resource inventory               | Azure Resource Graph count in Canada Central                                      | Pass: no existing planned resource types returned                                                                   | 2026-08-23T08:13:00-07:00 |
+| Static RBAC                      | Review all `Microsoft.Authorization/roleAssignments` against runtime operations   | Pass: container-scoped Storage roles, Key Vault secret readers, and synthesis-only Foundry role                     | 2026-08-22T16:03:00-07:00 |
+| Azure CLI authentication         | `az account show`                                                                 | Pass: MCAPS subscription `ad92e163-a85e-40cc-bb50-054b0b8197a8`, tenant `1cf61a60-a877-46a7-86bc-a8f76b6ab441`      | 2026-08-23T08:12:00-07:00 |
+| Container Apps quota             | `az quota show/usage show ManagedEnvironmentCount`                                | Pass: limit 50, usage 0                                                                                             | 2026-08-23T08:14:00-07:00 |
+| Storage quota                    | `az quota list/usage show Microsoft.Storage`                                      | Pass: limit 250, usage 0                                                                                            | 2026-08-23T08:15:00-07:00 |
+| PostgreSQL capability            | `az postgres flexible-server list-skus --location canadacentral`                  | Pass: D2ds v5, zone HA, geo backup, and combined zone HA/geo backup supported                                       | 2026-08-23T08:16:00-07:00 |
+| Foundry model quota              | Model-specific capacity                                                           | Deferred: phase-1 deployment has `deployFoundryModel=false`                                                         | 2026-08-23T08:17:00-07:00 |
+| Image publication                | Public GHCR digest references                                                     | Blocked until implementation is committed and image workflow runs                                                   | 2026-08-22T16:04:00-07:00 |
+| ARM template validation          | `az deployment sub validate --subscription ad92...`                               | Pass: provisioning state `Succeeded`                                                                                | 2026-08-23T08:18:00-07:00 |
+| Production what-if               | `az deployment sub what-if --subscription ad92... --result-format ResourceIdOnly` | Pass: create-only preview; no modify/delete; dynamic RBAC/admin resources reported as expected unsupported analysis | 2026-08-23T08:18:00-07:00 |
 
 **Validated by:** `azure-validate`
 

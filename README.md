@@ -91,6 +91,30 @@ pnpm dev
 Open <http://127.0.0.1:3000>. Local authentication is bypassed by default. Set
 `DEV_AUTH_DISABLED=false` to exercise the production-style access gate.
 
+The dashboard reads demonstration data and needs no backing services. To run the
+collector, scanner, or synthesizer jobs, start Postgres and Azurite:
+
+```bash
+docker compose up -d
+```
+
+Postgres listens on `127.0.0.1:5433` and Azurite on `127.0.0.1:10000`, chosen so
+the stack cannot collide with other local instances. Uncomment the local block
+in `.env` to point the jobs at them: setting `PGPASSWORD` switches the pool to
+password auth, and setting `AZURE_STORAGE_BLOB_ENDPOINT` with
+`AZURE_STORAGE_KEY` points evidence writes at Azurite. Both are ignored when
+`NODE_ENV=production`, so deployed workloads always use managed identity.
+
+Create the evidence container once after first start:
+
+```bash
+az storage container create --name evidence \
+  --connection-string "UseDevelopmentStorage=true"
+```
+
+Stop the stack with `docker compose down`, or `docker compose down -v` to also
+discard the local data volumes.
+
 Quality checks:
 
 ```bash
