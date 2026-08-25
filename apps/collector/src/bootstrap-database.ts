@@ -15,6 +15,55 @@ function quoteIdentifier(value: string): string {
   return `"${value.replaceAll('"', '""')}"`;
 }
 
+interface PgaadauthPrincipal {
+  rolname: string;
+  objectid: string;
+}
+
+/**
+ * The pgaadauth extension is installed only in the server's maintenance
+ * database, not in application databases created afterwards, so its principal
+ * functions must be called against `postgres`. The grants that follow still run
+ * against the application database.
+ */
+async function ensureWebPrincipal(
+  webRoleName: string,
+  webObjectId: string,
+): Promise<string> {
+  const maintenancePool = createDatabasePool("postgres");
+
+  try {
+    const available = await maintenancePool.query(
+      "select 1 from pg_proc where proname = 'pgaadauth_create_principal_with_oid'",
+    );
+    if (available.rowCount === 0) {
+      throw new Error(
+        "pgaadauth_create_principal_with_oid is unavailable in the maintenance database.",
+      );
+    }
+
+    const principals = await maintenancePool.query<PgaadauthPrincipal>(
+      "select rolname, objectid from pg_catalog.pgaadauth_list_principals(false) where objectid = $1",
+      [webObjectId],
+    );
+    if (principals.rowCount === 0) {
+      await maintenancePool.query(
+        "select * from pg_catalog.pgaadauth_create_principal_with_oid($1, $2, 'service', false, false)",
+        [webRoleName, webObjectId],
+      );
+      return "created";
+    }
+    if (principals.rows[0]?.rolname !== webRoleName) {
+      throw new Error(
+        `Web identity is already mapped to PostgreSQL role ${principals.rows[0]?.rolname}.`,
+      );
+    }
+    return "already-present";
+  } finally {
+    await maintenancePool.end();
+  }
+}
+
 async function main(): Promise<void> {
   const pool = createDatabasePool();
   const webRoleName = requiredEnvironment("WEB_IDENTITY_NAME");
@@ -24,23 +73,7 @@ async function main(): Promise<void> {
   try {
     await migrateDatabase(pool);
 
-    const principals = await pool.query<{
-      objectid: string;
-      rolename: string;
-    }>(
-      "select objectid, rolename from pg_catalog.pgaadauth_list_principals(false) where objectid = $1",
-      [webObjectId],
-    );
-    if (principals.rowCount === 0) {
-      await pool.query(
-        "select * from pg_catalog.pgaadauth_create_principal_with_oid($1, $2, 'service', false, false)",
-        [webRoleName, webObjectId],
-      );
-    } else if (principals.rows[0]?.rolename !== webRoleName) {
-      throw new Error(
-        `Web identity is already mapped to PostgreSQL role ${principals.rows[0]?.rolename}.`,
-      );
-    }
+    const principalState = await ensureWebPrincipal(webRoleName, webObjectId);
 
     const quotedRole = quoteIdentifier(webRoleName);
     const quotedDatabase = quoteIdentifier(databaseName);
@@ -59,6 +92,7 @@ async function main(): Promise<void> {
       JSON.stringify({
         event: "database-bootstrap-completed",
         webRoleName,
+        principalState,
       }),
     );
   } finally {
