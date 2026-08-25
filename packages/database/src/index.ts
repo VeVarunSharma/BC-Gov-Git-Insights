@@ -27,10 +27,10 @@ export function getDatabaseCredential(): TokenCredential {
   return new DefaultAzureCredential();
 }
 
-export function createDatabasePool(): Pool {
+export function createDatabasePool(databaseOverride?: string): Pool {
   const host = requireEnvironment("PGHOST");
   const port = Number(process.env.PGPORT ?? "5432");
-  const database = requireEnvironment("PGDATABASE");
+  const database = databaseOverride ?? requireEnvironment("PGDATABASE");
   const user = requireEnvironment("PGUSER");
   const max = Number(process.env.PGPOOL_MAX ?? "5");
 
