@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OpenGit Ministry — demo media and handoff</title>
+    <style>
+      body {
+        font:
+          18px/1.6 system-ui,
+          sans-serif;
+        background: #f1f5f9;
+        color: #0f172a;
+        max-width: 1100px;
+        margin: auto;
+        padding: 30px;
+      }
+      h1,
+      h2 {
+        line-height: 1.2;
+      }
+      a {
+        color: #1d4ed8;
+      }
+      .notice {
+        background: #dbeafe;
+        padding: 18px;
+        border-radius: 12px;
+      }
+      video,
+      img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border: 1px solid #94a3b8;
+        border-radius: 10px;
+        background: white;
+      }
+      figure {
+        margin: 35px 0;
+      }
+      figcaption {
+        padding-top: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Public code → evidence → human decision</h1>
+    <p class="notice">
+      <strong>Fixture-backed demonstration, not a live assessment.</strong>
+      Twelve demonstration repositories, target cohort 100. Scores, dates,
+      candidate ownership, and recommendations are illustrative. Independent
+      project; no government endorsement.
+    </p>
+    <p>
+      These are actual local production-mode dashboard captures. The separate
+      worksheet is a static facilitator artifact. The video is a five-minute
+      <strong>screenshot slideshow with generated narration</strong>, not a
+      recording of live interaction or a human rehearsal.
+    </p>
+    <nav aria-label="Presenter resources">
+      <a href="../demo/demo-script.md">Five- and fifteen-minute scripts</a> ·
+      <a href="../demo/opportunity-brief.html">Decision worksheet</a> ·
+      <a href="../demo/synthetic-sample.json">Offline fictional sample</a> ·
+      <a href="../demo/evidence-example.json">Illustrative evidence</a> ·
+      <a href="release-evidence.json">Verification and outstanding gates</a>
+    </nav>
+    <h2>Five-minute walkthrough</h2>
+    <video controls preload="metadata" poster="overview.png">
+      <source src="demo-slideshow.mp4" type="video/mp4" />
+      <track
+        kind="captions"
+        src="demo-captions.vtt"
+        srclang="en"
+        label="English transcript captions"
+        default
+      />
+      Download the <a href="demo-slideshow.mp4">MP4</a> and
+      <a href="demo-captions.vtt">caption transcript</a>.
+    </video>
+    <p>
+      <a href="demo-slideshow.mp4">Download video</a> ·
+      <a href="demo-captions.vtt">Read full narration transcript</a>. Each
+      chapter shows its narration as a caption; pauses allow discussion. Open
+      the full-size images below for legible portfolio details. For reliable
+      captions, serve the docs over localhost HTTP rather than opening a file
+      URL.
+    </p>
+    <figure>
+      <a href="overview.png"
+        ><img
+          src="overview.png"
+          alt="Dashboard overview with fixture warning, target cohort, illustrative totals, and evidence coverage chart."
+      /></a>
+      <figcaption>
+        00:00–01:30: Customer question and coverage before confidence. This is
+        not a current government inventory.
+      </figcaption>
+    </figure>
+    <figure>
+      <a href="portfolio.png"
+        ><img
+          src="portfolio.png"
+          alt="Complete candidate ministry section: scorecards, portfolio comparison, attention queue, reuse hypotheses, and missing-evidence warnings."
+          loading="lazy"
+      /></a>
+      <figcaption>
+        01:30–02:30: Candidate portfolio comparisons. Membership, confidence,
+        and coverage are distinct from quality.
+      </figcaption>
+    </figure>
+    <figure>
+      <a href="estate-map.png"
+        ><img
+          src="estate-map.png"
+          alt="Complete estate map with candidate ministry boundaries, repositories, capabilities, and separate relationship and provenance legends."
+          loading="lazy"
+      /></a>
+      <figcaption>
+        02:30–03:30: Relationship hypotheses, not authoritative ownership or
+        proof of consolidation.
+      </figcaption>
+    </figure>
+    <figure>
+      <a href="opportunities.png"
+        ><img
+          src="opportunities.png"
+          alt="Illustrative agentic recommendation cards showing separate value, readiness, risk, confidence, and safe outputs."
+          loading="lazy"
+      /></a>
+      <figcaption>
+        03:30–04:30: One opportunity for human validation. No live Foundry call
+        or automated action.
+      </figcaption>
+    </figure>
+    <figure>
+      <a href="worksheet.png"
+        ><img
+          src="worksheet.png"
+          alt="Blank offline opportunity worksheet covering business question, scope, evidence, hypothesis, validation, accountable owner, pilot acceptance, and next action."
+          loading="lazy"
+      /></a>
+      <figcaption>
+        04:30–05:00: Complete the separate worksheet and agree an owner and next
+        step. Entries are not saved; print to PDF before closing.
+      </figcaption>
+    </figure>
+    <figure>
+      <img
+        src="architecture.svg"
+        alt="Current committed fixtures feed metrics and dashboard; separate worksheet captures human decisions. Target read-only GitHub jobs, evidence storage, optional Foundry, read models, and protected dashboard remain unverified end to end."
+        loading="lazy"
+      />
+      <figcaption>
+        Current versus target architecture. The offline synthetic sample is not
+        a dashboard import.
+      </figcaption>
+    </figure>
+    <h2>Release boundaries</h2>
+    <p>
+      Independent presenter rehearsal, cloud deployment, live read-model
+      integration, catalog schema validation, and named support ownership remain
+      pending. The catalog URL supplied for preparation returned 404; metadata
+      is provisional.
+    </p>
+  </body>
+</html>

@@ -1,126 +1,162 @@
 # Production deployment
 
-BC Gov OpenGit Ministry uses exactly one Azure environment: `production` in
-Canada Central. Infrastructure is deployed at subscription scope through the
-protected GitHub `production` environment.
+## Status and authorization gate
 
-## Current deployment gate
+The repository contains subscription-scope Bicep and workflows targeting a
+GitHub environment named `production`, with Canada Central as the default
+region. These are implementation artifacts, **not proof of a cloud deployment
+or permission to deploy**. No tenant, subscription, customer consent, quota,
+or live RBAC verification is presumed.
 
-The production IaC is locally validated, but deployment remains blocked until:
+Before any Azure action, obtain explicit authorization from the selected account
+owner, agree the data/access mode, nominate deployment and cost owners, and
+review the target subscription, resource group, policy, region, and budget.
+Historical `.azure` plans do not authorize use of any account.
 
-1. the user-selected MCAPS production subscription is validated;
-2. the GitHub `production` environment has an OIDC deployment identity;
-3. Container Apps, PostgreSQL, and Foundry quotas are confirmed;
-4. four public GHCR images are published and pinned by digest;
-5. the Entra and source GitHub OAuth registrations are created.
+## What the workflows actually do
 
-No workflow deploys automatically. Both validation what-if and deployment are
-manual.
+- **Continuous integration** runs repository quality checks and Bicep build.
+- **Publish container images** runs on qualifying `main` pushes or manually,
+  builds web/collector/scanner/synthesizer images, and reports digests. Publishing
+  images is not Azure deployment; verify package pull permissions separately.
+- **Validate infrastructure** builds Bicep/validates parameter JSON on matching
+  pull requests; only its manual dispatch runs an OIDC subscription what-if.
+- **Deploy infrastructure** is manual-only, uses the `production` environment,
+  runs what-if, then immediately applies the template in the same job.
 
-## GitHub production environment
+Configure environment protection/reviewers explicitly. The deployment workflow
+does not pause for a separate approval between its what-if and create steps.
+Review an authorized validation run first; workflow existence/success is not
+deployment authorization.
 
-Create one protected GitHub environment named `production`. Require reviewers
-for deployment and configure these variables:
+**Known parity gap:** `infra-validate.yml` does not currently pass
+`publicDashboard`, whereas `deploy.yml` passes `PUBLIC_DASHBOARD`. For public
+mode its what-if therefore does not preview the same ingress/auth settings.
+Resolve this gap, or run a separately authorized what-if with exactly the
+deployment parameters and record the reviewed output before deployment.
 
-| Variable                   | Phase 1 value                                    | Purpose                                      |
-| -------------------------- | ------------------------------------------------ | -------------------------------------------- |
-| `AZURE_CLIENT_ID`          | OIDC application client ID                       | Deployment identity                          |
-| `AZURE_TENANT_ID`          | `1cf61a60-a877-46a7-86bc-a8f76b6ab441`           | MCAPS deployment tenant                      |
-| `AZURE_SUBSCRIPTION_ID`    | `ad92e163-a85e-40cc-bb50-054b0b8197a8`           | User-selected MCAPS subscription             |
-| `AZURE_LOCATION`           | `canadacentral`                                  | Single production region                     |
-| `GHCR_WEB_IMAGE`           | `ghcr.io/...@sha256:...`                         | Immutable web image                          |
-| `GHCR_METADATA_JOB_IMAGE`  | `ghcr.io/...@sha256:...`                         | Immutable collector image                    |
-| `GHCR_SCAN_JOB_IMAGE`      | `ghcr.io/...@sha256:...`                         | Immutable scanner image                      |
-| `GHCR_SYNTHESIS_JOB_IMAGE` | `ghcr.io/...@sha256:...`                         | Immutable synthesizer image                  |
-| `CONFIGURE_ENTRA_AUTH`     | `false`                                          | Keeps web ingress private until auth exists  |
-| `PUBLIC_DASHBOARD`         | `true`                                           | v1 anonymous dashboard with external ingress |
-| `CONFIGURE_SOURCE_OAUTH`   | `false`                                          | Delays source secret binding                 |
-| `ENABLE_SCHEDULED_JOBS`    | `false`                                          | Starts jobs manually during bootstrap        |
-| `DEPLOY_FOUNDRY_MODEL`     | `false`                                          | Delays model deployment until quota is known |
-| `ALLOWED_TENANT_IDS`       | MCAPS, Microsoft, BC Gov, and Alberta tenant IDs | Application authorization allowlist          |
+## Select an access mode explicitly
 
-The deployment workflow rejects image tags that are not pinned with
-`@sha256:`.
+| Mode                         | `PUBLIC_DASHBOARD` | `CONFIGURE_ENTRA_AUTH` | Expected behavior                                                           |
+| ---------------------------- | ------------------ | ---------------------- | --------------------------------------------------------------------------- |
+| Internal bootstrap           | `false`            | `false`                | Internal ingress; production dashboard/API deny unauthenticated data access |
+| Public fixture demonstration | `true`             | `false`                | External ingress; anonymous read-only fixture viewer                        |
+| Authenticated pilot          | `false`            | `true`                 | External ingress protected by Azure Easy Auth and application tenant checks |
 
-## Phase 1: foundation
+Do not describe authenticated external ingress as network-private.
+`PUBLIC_DASHBOARD=true` bypasses application authorization first, even when
+other auth settings are present. Do not enable it alongside an authenticated
+pilot. Public mode is only for reviewed public/demo content, never sensitive
+aggregated findings. Before serving real findings, explicitly set it to `false`,
+configure identity, and verify denial paths. No backing pipeline is activated
+merely by changing access mode.
 
-1. Run **Validate infrastructure** manually and review the subscription
-   what-if.
-2. Run **Deploy infrastructure** with all optional integrations disabled.
-3. Record Bicep outputs for the generated Key Vault, Storage, PostgreSQL,
-   Foundry, Container Apps, and managed identities.
-4. Run the manual database-bootstrap job after the PostgreSQL server is ready.
+## GitHub `production` environment variables
 
-The web Container App has no external ingress while Entra authentication is
-disabled, unless `PUBLIC_DASHBOARD` is `true`.
+Use placeholders below; the operator must supply account-specific values.
 
-### v1 public dashboard
+| Variable                   | Value / purpose                                                                  |
+| -------------------------- | -------------------------------------------------------------------------------- |
+| `AZURE_CLIENT_ID`          | `<deployment-oidc-client-id>` with approved least-privilege scope                |
+| `AZURE_TENANT_ID`          | `<authorized-tenant-id>`                                                         |
+| `AZURE_SUBSCRIPTION_ID`    | `<authorized-subscription-id>`                                                   |
+| `AZURE_LOCATION`           | `canadacentral`, subject to policy and capacity review                           |
+| `GHCR_WEB_IMAGE`           | `ghcr.io/<owner>/<web-image>@sha256:<digest>`                                    |
+| `GHCR_METADATA_JOB_IMAGE`  | `ghcr.io/<owner>/<collector-image>@sha256:<digest>`                              |
+| `GHCR_SCAN_JOB_IMAGE`      | `ghcr.io/<owner>/<scanner-image>@sha256:<digest>`                                |
+| `GHCR_SYNTHESIS_JOB_IMAGE` | `ghcr.io/<owner>/<synthesizer-image>@sha256:<digest>`                            |
+| `PUBLIC_DASHBOARD`         | Explicit `true` or `false` for the selected mode                                 |
+| `CONFIGURE_ENTRA_AUTH`     | Explicit `true` or `false` for the selected mode                                 |
+| `ALLOWED_TENANT_IDS`       | `<consented-tenant-id>[,<another-consented-tenant-id>]`; authenticated mode only |
+| `CONFIGURE_SOURCE_OAUTH`   | `false` until project-owned source credentials are configured                    |
+| `ENABLE_SCHEDULED_JOBS`    | `false` until manual job and failure-path verification                           |
+| `DEPLOY_FOUNDRY_MODEL`     | `false` until model, region, capacity, and cost are confirmed                    |
 
-v1 ships without sign-in. Setting `PUBLIC_DASHBOARD=true` both enables external
-ingress and makes the application serve an anonymous read-only viewer, so no
-Entra registration or Key Vault secret is needed to reach the dashboard. Phase 2
-below is only required when you want authenticated access.
+Both Azure workflows check that all four image references contain `@sha256:`;
+operators must also verify actual digest provenance, existence, and pull access.
+Use protected OIDC federation for this repository/environment; do not add
+deployment credentials to source control.
 
-This is safe only while the dashboard serves public repository metadata. Unset
-`PUBLIC_DASHBOARD` and complete Phase 2 before surfacing security findings. See
-`docs/security/threat-model.md`.
+## Foundation and optional integrations
 
-## Phase 2: identity and collection
+1. Confirm authorization, selected mode, quotas (Container Apps, PostgreSQL,
+   Foundry if used), policies, and a reviewed, parameter-matched what-if.
+2. Publish/pin four accessible images and configure protected OIDC variables.
+3. Review `infra/main.parameters.json`: resource naming, region, and budget
+   defaults require account-owner approval.
+4. Dispatch **Deploy infrastructure** only after these gates are met. Capture
+   deployment outputs for resource IDs, identities, endpoints, and bootstrap job.
+5. If testing the database path, start the generated manual bootstrap job after
+   PostgreSQL readiness; verify migrations and the web identity's read-only role.
+   Database provisioning does not switch fixture routes to PostgreSQL.
 
-Create:
+For authenticated mode create an appropriately consented Entra registration and
+store the client secret directly in the generated Key Vault:
 
-- one multitenant Entra web registration;
-- one project-owned GitHub OAuth App for authenticated public REST reads.
+| Variable                  | Value                                |
+| ------------------------- | ------------------------------------ |
+| `ENTRA_WEB_CLIENT_ID`     | `<entra-application-client-id>`      |
+| `ENTRA_CLIENT_SECRET_URL` | `<versionless-key-vault-secret-uri>` |
 
-Store their secrets directly in the generated production Key Vault, then set:
+For authenticated public GitHub REST reads, separately create a project-owned
+GitHub OAuth application, store its secret in Key Vault, and set
+`CONFIGURE_SOURCE_OAUTH=true`, `SOURCE_OAUTH_CLIENT_ID`, and
+`SOURCE_OAUTH_CLIENT_SECRET_URL`. No source-organization installation or write
+permission is required. Verify observed rate-limit headers rather than promising
+a fixed request quota.
 
-| Variable                         | Production value                 |
-| -------------------------------- | -------------------------------- |
-| `CONFIGURE_ENTRA_AUTH`           | `true`                           |
-| `ENTRA_WEB_CLIENT_ID`            | Entra application client ID      |
-| `ENTRA_CLIENT_SECRET_URL`        | Versionless Key Vault secret URI |
-| `CONFIGURE_SOURCE_OAUTH`         | `true`                           |
-| `SOURCE_OAUTH_CLIENT_ID`         | GitHub OAuth client ID           |
-| `SOURCE_OAUTH_CLIENT_SECRET_URL` | Versionless Key Vault secret URI |
+For optional Foundry provisioning set `DEPLOY_FOUNDRY_MODEL=true` only after
+confirming `FOUNDRY_MODEL_DEPLOYMENT_NAME`, `FOUNDRY_MODEL_NAME`,
+`FOUNDRY_MODEL_VERSION`, `FOUNDRY_MODEL_FORMAT`, `FOUNDRY_MODEL_SKU`, and
+`FOUNDRY_MODEL_CAPACITY` against current regional availability and policy.
+Do not assume defaults such as `GlobalStandard` meet residency requirements.
+Run manual metadata, scan, and synthesis steps; inspect evidence, failures, and
+lineage before enabling schedules. Scheduled jobs are not a proven orchestrated
+pipeline or a dashboard refresh mechanism.
 
-Redeploy and verify:
+## Verification conditional on selected mode
 
-- anonymous requests cannot access dashboard data;
-- Microsoft tenant sign-in succeeds;
-- unallowlisted tenant IDs are rejected;
-- BC Gov and Alberta access remains disabled until consent testing succeeds;
-- the manual metadata job receives a 5,000-request/hour GitHub limit.
+Record the commit, image digests, deployment parameters, reviewer, and evidence.
 
-## Phase 3: Foundry and schedules
+- All modes: check `/api/health` or `/healthz` from the appropriate network;
+  health does not prove database/AI connectivity. Verify resources, identities,
+  scoped storage RBAC, secret access, read-only database grants where configured,
+  and telemetry redaction. Verify retention and failure behavior.
+- Internal bootstrap: confirm no public ingress and no anonymous data access;
+  check health from within the permitted network.
+- Public fixture: anonymous dashboard, `/api/overview`, and `/api/graph` should
+  succeed and remain clearly demo-labelled. Do **not** require anonymous denial.
+- Authenticated pilot: anonymous dashboard/API data must be denied or redirected
+  to sign-in; approved tenant login succeeds, unallowlisted tenant fails,
+  issuer/audience/expiry are checked, and principal headers cannot be spoofed
+  around platform authentication. Confirm `PUBLIC_DASHBOARD=false`.
+- Optional integrations: verify actual source rate limits, scan SHA/artifact
+  linkage, synthesis identity and evidence citations, and observed failure
+  summaries. Test absent AI without presenting fixture output as live analysis.
 
-After capacity discovery, configure:
+Do not report production readiness until the applicable checks and
+[runbook release gates](runbook.md#release-readiness-checklist) are evidenced.
+Report an `https://` production URL only after live verification; none is
+asserted by this guide.
 
-| Variable                        | Value                                   |
-| ------------------------------- | --------------------------------------- |
-| `DEPLOY_FOUNDRY_MODEL`          | `true`                                  |
-| `FOUNDRY_MODEL_DEPLOYMENT_NAME` | Stable application deployment name      |
-| `FOUNDRY_MODEL_NAME`            | Confirmed model name                    |
-| `FOUNDRY_MODEL_VERSION`         | Explicit immutable version              |
-| `FOUNDRY_MODEL_FORMAT`          | Usually `OpenAI`                        |
-| `FOUNDRY_MODEL_SKU`             | Confirmed SKU, usually `GlobalStandard` |
-| `FOUNDRY_MODEL_CAPACITY`        | Confirmed quota-backed capacity         |
+## Cost ownership, rollback, and teardown
 
-Run one manual metadata, scan, and synthesis cycle. Only after all three
-succeed set `ENABLE_SCHEDULED_JOBS=true` and redeploy.
+Before provisioning, record a named subscription/cost owner, deployment owner,
+expiry date, approved monthly limit, budget recipients, and retention decision.
+The parameter file's `500` monthly budget is a configurable alert threshold,
+**not an estimate or spending cap**; its empty email list needs review.
+PostgreSQL, compute/jobs, storage, monitoring, and model usage may incur charges
+even when the fixture dashboard does not use them.
 
-## Verification
+For rollback, disable schedules, retain evidence needed for diagnosis, and
+redeploy the previously approved image digests/configuration. A web rollback
+does not roll back database migrations or delete evidence.
 
-After every deployment:
-
-1. verify the web health endpoint;
-2. verify anonymous dashboard/API denial;
-3. verify Entra tenant allowlisting;
-4. verify Container Apps jobs and their managed identities;
-5. verify container-scoped Storage RBAC;
-6. verify Key Vault access is limited to web and collector identities;
-7. verify the web PostgreSQL role is read-only;
-8. verify Foundry calls use the synthesis identity;
-9. verify Application Insights receives no repository source or secret values.
-
-Deployment is complete only when the production URL is reported with an
-`https://` scheme and live RBAC verification passes.
+At pilot end, the authorized owner should disable schedules, export only
+approved retained evidence, and inventory all created resources. Delete the
+dedicated resource group **only after verifying its ownership and contents**;
+review subscription-scope budgets/role assignments, registrations/federation,
+Key Vault retention, model deployments, logs, and GHCR artifacts separately.
+Revoke project credentials when no longer needed. Record deletion verification,
+retention exceptions, and a final cost review; stopping the web app alone is not
+teardown.

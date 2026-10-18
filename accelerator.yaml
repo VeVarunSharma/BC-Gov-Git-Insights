@@ -1,0 +1,76 @@
+# Provisional project metadata, NOT a validated Accelerator Catalog schema.
+# The supplied catalog URL returned 404 during preparation on 2026-10-18.
+id: opengit-portfolio-insights
+name: OpenGit Portfolio Insights
+display_name: BC Gov OpenGit Ministry
+summary: >-
+  Read-only public GitHub portfolio decision support, separating deterministic
+  evidence from advisory AI hypotheses and human validation.
+repository: https://github.com/VeVarunSharma/BC-Gov-Git-Insights
+license: Apache-2.0
+status: draft
+readiness:
+  current: demo-candidate
+  target: catalog-ready
+  scope: Fixture-backed dashboard; live read-model integration not established
+  independent_handoff_verified: false
+  deployment_verified: false
+  catalog_schema_verified: false
+customer:
+  positioning: Reusable public-sector accelerator
+  demonstration_context: Public bcgov repository names with illustrative analysis
+  confirmed_customer_engagement: false
+industries:
+  - Government
+personas:
+  - Platform engineering lead
+  - Enterprise architect
+  - SE/CSA
+use_cases:
+  - Portfolio discovery
+  - Capability reuse assessment
+  - Delivery improvement prioritization
+  - Human-reviewed agentic opportunity discovery
+technologies:
+  - GitHub
+  - Next.js
+  - Azure Container Apps
+  - Azure Data Lake Storage Gen2
+  - Azure Database for PostgreSQL
+  - Microsoft Foundry
+  - Microsoft Entra ID
+experience:
+  mode: Fixture-backed local dashboard
+  live_demo_url: null
+  ai_required_for_fixture_demo: false
+  demo_script: docs/demo/demo-script.md
+  worksheet: docs/demo/opportunity-brief.html
+  offline_sample: docs/demo/synthetic-sample.json
+  evidence_example: docs/demo/evidence-example.json
+  architecture: docs/assets/architecture.svg
+  media_gallery: docs/assets/index.html
+  recording: docs/assets/demo-slideshow.mp4
+  recording_type: Five-minute screenshot slideshow with generated narration
+  captions: docs/assets/demo-captions.vtt
+  release_evidence: docs/assets/release-evidence.json
+boundaries:
+  source_access: Public, read-only
+  executes_analyzed_repository_code: false
+  writes_to_analyzed_organization: false
+  ai_outputs: Advisory; require evidence and human review
+  organization_mappings: Candidate-only unless validated
+  endorsement: Independent project; no government endorsement
+engagement:
+  motion: Evidence-to-action portfolio workshop
+  deliverable: Validated opportunity brief and bounded pilot proposal
+ownership:
+  maintainer: null
+  support_channel: https://github.com/VeVarunSharma/BC-Gov-Git-Insights/issues
+  security_policy: SECURITY.md
+  service_level: No SLA; named maintenance owner required before a pilot
+submission_gates:
+  - Obtain accessible catalog URL and confirm real submission schema
+  - Complete independent five- and fifteen-minute presenter handoff
+  - Verify any advertised cloud deployment and live read-model integration
+  - Confirm maintenance owner and customer-approved support expectations
+  - Complete release-specific security, licensing, and accessibility review

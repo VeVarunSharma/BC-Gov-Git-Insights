@@ -71,6 +71,14 @@ export default async function Home() {
       </nav>
 
       <main>
+        <aside className="methodology-banner" aria-label="Demonstration scope">
+          <strong>Fixture-backed demonstration — not a live assessment.</strong>{" "}
+          Showing {repositories.length} demonstration repositories from a target
+          cohort of {organizationSnapshot.selectedRepositories}. Scores, dates,
+          recommendations, and candidate ministry assignments are illustrative,
+          not verified findings or authoritative ownership records. No live
+          collection, database, or AI call powers this dashboard.
+        </aside>
         <section id="overview" className="section-block">
           <div className="section-heading">
             <div>
@@ -88,24 +96,26 @@ export default async function Home() {
               <strong>
                 {formatNumber(organizationSnapshot.totalRepositories)}
               </strong>
-              <small>Observed GitHub organization metadata</small>
+              <small>
+                Illustrative organization snapshot, not a live count
+              </small>
             </article>
             <article className="metric-card">
               <span>Initial cohort</span>
               <strong>{organizationSnapshot.selectedRepositories}</strong>
-              <small>Most-starred eligible repositories</small>
+              <small>Target cohort, not completed scan coverage</small>
             </article>
             <article className="metric-card">
               <span>Active in the last year</span>
               <strong>
                 {formatNumber(organizationSnapshot.activeYearRepositories)}
               </strong>
-              <small>Portfolio expansion candidate</small>
+              <small>Illustrative activity snapshot</small>
             </article>
             <article className="metric-card">
               <span>Capability candidates</span>
               <strong>{organizationSnapshot.observedCapabilities}</strong>
-              <small>AI-inferred and evidence-labelled</small>
+              <small>Illustrative capability hypotheses</small>
             </article>
           </div>
 
@@ -116,7 +126,7 @@ export default async function Home() {
                   <span className="eyebrow">Evidence quality</span>
                   <h3>Coverage before confidence</h3>
                 </div>
-                <span className="status-badge observed">Observed</span>
+                <span className="status-badge observed">Demo signals</span>
               </div>
               <CoverageChart data={dimensionCoverage} />
             </article>
@@ -256,8 +266,9 @@ export default async function Home() {
               <span className="eyebrow">Agentic opportunities</span>
               <h2>Where workflows may be valuable and safe</h2>
               <p>
-                Recommendations combine transparent value, readiness, and risk
-                dimensions with Foundry-generated evidence-cited rationale.
+                Fixture recommendations illustrate separate value, readiness,
+                and risk dimensions. A production synthesis must cite evidence
+                and be reviewed by a human; no Foundry call is made here.
               </p>
             </div>
           </div>
