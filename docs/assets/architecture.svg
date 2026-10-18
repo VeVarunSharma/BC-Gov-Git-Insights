@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="780" viewBox="0 0 1280 780" role="img" aria-labelledby="title desc">
+  <title id="title">OpenGit current fixture mode and target integrated mode</title>
+  <desc id="desc">Current: committed demonstration fixtures feed metrics and the dashboard, then a separate human worksheet. Target, not verified end to end: public GitHub metadata and immutable clones feed read-only jobs, evidence storage, optional advisory Foundry synthesis and database read models, then a protected dashboard and human decision. The dashboard currently does not read those database models.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2563eb"/></marker>
+  </defs>
+  <rect width="1280" height="780" rx="20" fill="#f1f5f9"/>
+  <g font-family="Arial,Helvetica,sans-serif" fill="#0f172a">
+    <text x="40" y="55" font-size="30" font-weight="700">Public code → evidence → human decision</text>
+    <text x="40" y="95" font-size="20">Independent proof of concept • no source-organization writes • no government endorsement</text>
+    <rect x="30" y="125" width="1220" height="220" rx="16" fill="#dbeafe"/>
+    <text x="50" y="160" font-size="23" font-weight="700">CURRENT: fixture-backed local demonstration</text>
+    <g fill="white" stroke="#2563eb" stroke-width="2">
+      <rect x="55" y="190" width="270" height="100" rx="12"/>
+      <rect x="400" y="190" width="350" height="100" rx="12"/>
+      <rect x="830" y="190" width="350" height="100" rx="12"/>
+    </g>
+    <g font-size="20" text-anchor="middle">
+      <text x="190" y="225">Committed demo fixtures</text><text x="190" y="258">12 records / target 100</text>
+      <text x="575" y="225">Metrics + Next.js dashboard</text><text x="575" y="258">No database or AI call</text>
+      <text x="1005" y="225">Separate workshop worksheet</text><text x="1005" y="258">Owner + validation + next action</text>
+    </g>
+    <g stroke="#2563eb" stroke-width="3" marker-end="url(#arrow)"><path d="M325 240H395"/><path d="M750 240H825"/></g>
+    <text x="55" y="325" font-size="18">Scores, dates, relationships, and recommendations are illustrative; not verified findings.</text>
+    <rect x="30" y="370" width="1220" height="335" rx="16" fill="#fff7ed" stroke="#c2410c" stroke-dasharray="8 6"/>
+    <text x="50" y="410" font-size="23" font-weight="700">TARGET: components exist; collection-to-dashboard integration remains unverified</text>
+    <g fill="white" stroke="#64748b" stroke-width="2">
+      <rect x="55" y="445" width="250" height="100" rx="12"/>
+      <rect x="365" y="445" width="250" height="100" rx="12"/>
+      <rect x="675" y="445" width="250" height="100" rx="12"/>
+      <rect x="985" y="445" width="230" height="100" rx="12"/>
+      <rect x="365" y="580" width="560" height="70" rx="12"/>
+    </g>
+    <g font-size="19" text-anchor="middle">
+      <text x="180" y="480">Public GitHub</text><text x="180" y="515">Metadata + pinned commits</text>
+      <text x="490" y="480">Read-only collection / scan</text><text x="490" y="515">Untrusted code never runs</text>
+      <text x="800" y="480">ADLS + PostgreSQL</text><text x="800" y="515">Evidence + read models</text>
+      <text x="1100" y="480">Protected dashboard</text><text x="1100" y="515">Human-reviewed outcome</text>
+      <text x="645" y="610">Optional Foundry synthesis: bounded, redacted evidence</text>
+      <text x="645" y="635">Advisory claims must cite evidence IDs; no write tools</text>
+    </g>
+    <g stroke="#2563eb" stroke-width="3" marker-end="url(#arrow)"><path d="M305 495H360"/><path d="M615 495H670"/><path d="M925 495H980"/><path d="M800 545V575"/></g>
+    <text x="55" y="685" font-size="18">Pilot gates: authorization, identity/RBAC, quota, budget, retention, recovery, and named ownership.</text>
+    <text x="40" y="750" font-size="18">Offline synthetic sample is workshop material, not a dashboard import or scanner input.</text>
+  </g>
+</svg>

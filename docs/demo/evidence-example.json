@@ -1,0 +1,29 @@
+{
+  "synthetic": true,
+  "datasetVersion": "synthetic-workshop-v1",
+  "repository": "sample-service-catalog",
+  "commitSha": "0000000000000000000000000000000000000001",
+  "commitNote": "Fictional 40-character reference; not a real Git commit or a dashboard evidence link.",
+  "evidenceId": "synthetic:1:documentation",
+  "source": {
+    "path": "README.md",
+    "line": 1,
+    "url": null,
+    "excerpt": "Fictional service catalog supporting service discovery."
+  },
+  "observation": "The fictional sample declares documentation present.",
+  "engine": "workshop-fixture",
+  "engineVersion": "1.0",
+  "inference": "Service discovery could be reusable across the two sample services.",
+  "confidence": 0.6,
+  "limitations": [
+    "Synthetic example, not a collected finding.",
+    "A README mention does not establish implementation quality, ownership, or compatibility.",
+    "No business savings or production readiness can be inferred."
+  ],
+  "validation": {
+    "status": "pending",
+    "ownerRole": "Platform lead and service maintainer",
+    "nextAction": "Compare interfaces, verify evidence at a real approved commit, and record whether to accept or reject the hypothesis."
+  }
+}

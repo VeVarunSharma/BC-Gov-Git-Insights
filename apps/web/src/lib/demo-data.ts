@@ -17,6 +17,9 @@ import {
 const collectedAt = "2026-08-22T17:00:00.000Z";
 
 export const organizationSnapshot = {
+  mode: "fixture" as const,
+  provenance:
+    "Public repository names with synthetic analysis signals, scores, dates, and candidate relationships; not a live scan.",
   totalRepositories: 2_693,
   activeYearRepositories: 1_039,
   activeQuarterRepositories: 717,

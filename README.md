@@ -1,121 +1,113 @@
+```text
+       .--------------------.         .--------------------.
+       |  PUBLIC CODE       |-------->|  SHARED INSIGHT    |
+       |  </>  </>  </>      |         |  evidence -> action|
+       '--------------------'         '--------------------'
+             BC GOV  /  OPENGIT MINISTRY
+        Discover the estate. Discuss the opportunity.
+```
+
 # BC Gov OpenGit Ministry
 
 An independent, Apache-2.0 proof of concept for evidence-backed portfolio
-intelligence over public repositories in
-[`github.com/bcgov`](https://github.com/bcgov).
+intelligence over public repositories in [`github.com/bcgov`](https://github.com/bcgov).
+Inspired by the external Git Insights and Git Insights Ministry concepts described
+by The Velocity Whitepapers; not an official BC Gov or Alberta product and not
+endorsed by either government.
 
-The project is inspired by the external Git Insights and Git Insights Ministry
-concepts described by The Velocity Whitepapers. It is not an official BC Gov or
-Alberta product and does not imply endorsement by either government.
+## A customer conversation, not a government assessment
 
-## Design boundary
+A public-sector portfolio lead wants to find reusable capabilities before funding
+another implementation. An engineering lead needs to distinguish missing evidence
+from poor quality. Together they explore a repository portfolio, examine candidate
+relationships, and turn one hypothesis into an owner-led discovery workshop.
+This accelerator demonstrates that conversation; it does not establish actual
+ownership, vulnerabilities, savings, or readiness of the named repositories.
 
-The proof of concept is zero-touch against the source organization:
+**Current scope:** the dashboard serves **12 demonstration repositories of a
+target cohort of 100** from `apps/web/src/lib/demo-data.ts`. Scores, signals,
+ministry/portfolio assignments, relationships, and recommendations are synthetic
+demonstration analysis. Displayed estate totals and timestamps are fixture
+context, not a live inventory. The target collector selects the 100 most-starred,
+BC Gov-owned, non-fork, non-empty public repositories; archived repositories
+remain eligible and labelled.
 
-- no GitHub App installation in BC Gov
-- no workflows, commits, pull requests, issues, comments, or labels
-- no BC Gov token or organization permission
-- public, read-only REST requests and shallow git clones only
-- repository code is scanned as data and is never executed
+## Try the dashboard
 
-The initial cohort is the 100 most-starred BC Gov-owned, non-fork, non-empty
-repositories. Archived repositories remain eligible and are labelled.
-
-## Architecture
-
-```text
-Public GitHub REST + immutable shallow clones
-                    |
-                    v
-        Azure Container Apps Jobs
-          metadata | scan | AI
-                    |
-          +---------+----------+
-          |                    |
-          v                    v
-      ADLS Gen2          PostgreSQL Flexible
-      evidence           facts, metrics, graph
-          |                    |
-          +---------+----------+
-                    |
-                    v
-          Next.js Container App
-      dashboard + read-only API + React Flow
-                    |
-                    v
-    Microsoft Foundry Responses API (advisory)
-```
-
-Deterministic facts and transparent metrics are authoritative. Foundry output is
-advisory, confidence-labelled, and must cite evidence IDs. The dashboard remains
-useful when AI is disabled.
-
-## Current vertical slice
-
-- versioned Zod contracts for repositories, evidence, findings, metrics, graph
-  entities, dossiers, and Agentic recommendations
-- authenticated public GitHub REST client with stable top-100 selection
-- immutable ADLS writer with managed identity and checksums
-- PostgreSQL/Drizzle schema with Entra token authentication
-- safe ephemeral scanner that disables hooks, LFS smudging, prompts, submodules,
-  and repository code execution
-- transparent repository health, confidence-weighted ministry/portfolio
-  aggregates, and Agentic value/readiness/risk calculations
-- Microsoft Foundry Responses API adapter with strict structured output
-- authenticated Next.js dashboard with ministry insights, attention and reuse
-  hypotheses, React Flow/ELK, and ECharts
-- subscription-scope Bicep for Container Apps, Jobs, ADLS, PostgreSQL, Key
-  Vault, Foundry, and monitoring
-- GitHub Actions for CI, GHCR images, Bicep validation, and manual OIDC
-  deployment
-
-Dashboard data is currently a clearly labelled demonstration fixture based on
-public repository metadata. Production routes are designed to move to
-PostgreSQL read models without changing the visualization contracts.
-
-## Local development
-
-Prerequisites:
-
-- Node.js 22 or newer
-- pnpm 10.33.0
-- Docker for container verification
-- Azure CLI and Bicep CLI for infrastructure validation
+Prerequisites: **Node.js >=22.14.0** and **pnpm 10.34.5**.
+The pnpm pin was upgraded from 10.33.0 to address reported security advisories;
+use the patched version for setup.
 
 ```bash
-cp .env.example .env
-pnpm install
+pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Open <http://127.0.0.1:3000>. Local authentication is bypassed by default. Set
-`DEV_AUTH_DISABLED=false` to exercise the production-style access gate.
-
-The dashboard reads demonstration data and needs no backing services. To run the
-collector, scanner, or synthesizer jobs, start Postgres and Azurite:
-
-```bash
-docker compose up -d
-```
-
-Postgres listens on `127.0.0.1:5433` and Azurite on `127.0.0.1:10000`, chosen so
-the stack cannot collide with other local instances. Uncomment the local block
-in `.env` to point the jobs at them: setting `PGPASSWORD` switches the pool to
-password auth, and setting `AZURE_STORAGE_BLOB_ENDPOINT` with
-`AZURE_STORAGE_KEY` points evidence writes at Azurite. Both are ignored when
-`NODE_ENV=production`, so deployed workloads always use managed identity.
-
-Create the evidence container once after first start:
+Open <http://127.0.0.1:3000>. **No environment file, Azure account, credentials,
+Docker, database, or AI service is needed for this development dashboard.**
+It defaults to a local development viewer. If configuration is needed, Next.js
+loads it from `apps/web/.env.local`, not a repository-root `.env`:
 
 ```bash
-az storage container create --name evidence \
-  --connection-string "UseDevelopmentStorage=true"
+cp .env.example apps/web/.env.local
 ```
 
-Stop the stack with `docker compose down`, or `docker compose down -v` to also
-discard the local data volumes.
+To exercise the local sign-in gate, set **both** `PUBLIC_DASHBOARD=false` and
+`DEV_AUTH_DISABLED=false` there and restart. `PUBLIC_DASHBOARD=true` is checked
+first and bypasses all other auth checks. The local gate is not proof of a
+production identity deployment; production additionally requires trusted Azure
+Easy Auth and validated tenant configuration.
 
-Quality checks:
+The separate [offline synthetic JSON sample](docs/demo/synthetic-sample.json)
+is reusable workshop input, **not a dashboard data mode or import feature**.
+The browser still uses the built-in BC Gov fixture.
+
+## Demonstrate and hand off
+
+- [Demo script: five-minute and fifteen-minute journeys](docs/demo/demo-script.md)
+- [Opportunity brief / workshop worksheet](docs/demo/opportunity-brief.html)
+- [Illustrative evidence record](docs/demo/evidence-example.json)
+- [Provisional accelerator metadata](accelerator.yaml)
+
+Use this as a discovery/account opener, then agree a workshop or bounded pilot.
+It is not a production service or a validated customer outcome. The proposed
+[accelerators catalog](https://github.com/mcaps-microsoft/accelerators-catalog)
+currently returns HTTP 404; metadata is provisional and not catalog-schema
+validated. Independent human rehearsal and cloud deployment are not claimed.
+See the demo script for media capture and release-readiness gates.
+
+## Read-only by design
+
+- No GitHub App installation or BC Gov organization permission.
+- No source-repository workflows, commits, pull requests, issues, comments, or labels.
+- Public, read-only REST requests and shallow clones; optional credentials belong
+  to the project, not the source organization.
+- Repository content is untrusted data and is never executed.
+- Deterministic evidence and transparent metrics are authoritative; model output
+  is advisory, confidence-labelled, and must cite evidence IDs.
+
+## Implementation and target architecture
+
+The working dashboard is a Next.js fixture-backed UI and read-only API with
+React Flow/ELK and ECharts. Contracts, metrics, graph utilities, a GitHub REST
+collector, ephemeral scanner, ADLS evidence writer, PostgreSQL/Drizzle schema,
+and a Microsoft Foundry Responses API adapter exist in source. Their presence
+does **not** establish a deployed, end-to-end collection-to-dashboard pipeline.
+Dashboard routes do not currently read PostgreSQL or call Foundry.
+
+The target Azure architecture uses Container Apps and Jobs, ADLS Gen2,
+PostgreSQL Flexible Server, Key Vault, Foundry, and monitoring with managed
+identities. [Architecture diagrams](docs/architecture/overview.md) separate
+the actual fixture path from the unverified target integration.
+
+## Optional jobs, quality, and operations
+
+Job processes do not automatically load root `.env`; invoke Node explicitly with
+`--env-file` as shown in the [runbook](docs/operations/runbook.md). That guide also
+covers optional Postgres/Azurite services, ports, bootstrap, and troubleshooting.
+Docker and Azure CLI/Bicep are only needed for their respective validation paths.
+
+Existing quality commands:
 
 ```bash
 pnpm format:check
@@ -126,27 +118,21 @@ pnpm build
 az bicep build --file infra/main.bicep
 ```
 
-## Azure preparation
+CI, GHCR publication, Bicep validation, and manual OIDC deployment workflows exist.
+No account, deployment authorization, quota, or cloud verification is implied.
+See [production deployment](docs/operations/production-deployment.md), including
+access-mode selection, cost ownership, and teardown. Historical
+[deployment](.azure/deployment-plan.md) and
+[infrastructure](.azure/infrastructure-plan.json) planning artifacts are context,
+not authorization to use any account.
 
-The approved application plan is captured in:
-
-- [Azure deployment plan](.azure/deployment-plan.md)
-- [Infrastructure plan](.azure/infrastructure-plan.json)
-
-Infrastructure generation is complete, but deployment is intentionally blocked
-until the target subscription, Container Apps quota, PostgreSQL capacity, and a
-Foundry model deployment are confirmed.
-
-## Documentation
+## Further reading
 
 - [Architecture](docs/architecture/overview.md)
-- [Methodology](docs/methodology/evidence-and-scoring.md)
+- [Evidence and scoring methodology](docs/methodology/evidence-and-scoring.md)
 - [Security model](docs/security/threat-model.md)
-- [Operations](docs/operations/runbook.md)
+- [Operations and release readiness](docs/operations/runbook.md)
 - [Production deployment](docs/operations/production-deployment.md)
-- [Contributing](CONTRIBUTING.md)
-- [Security policy](SECURITY.md)
+- [Contributing](CONTRIBUTING.md) · [Security policy](SECURITY.md)
 
-## License
-
-Licensed under the [Apache License 2.0](LICENSE).
+Licensed under [Apache-2.0](LICENSE).

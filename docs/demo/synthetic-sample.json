@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "1.0",
+  "datasetVersion": "synthetic-workshop-v1",
+  "synthetic": true,
+  "provenance": "Original fictional workshop data. No source repository content, real organizations, or collected findings. This offline sample is not loaded by the dashboard.",
+  "reset": "Reopen this committed file to restore the original sample. Keep workshop edits in a separate local copy.",
+  "repositories": [
+    {
+      "name": "sample-service-catalog",
+      "capability": "Service discovery",
+      "signals": {
+        "repositoryId": 1,
+        "datasetVersion": "synthetic-workshop-v1",
+        "daysSincePush": 10,
+        "archived": false,
+        "hasReadme": true,
+        "hasArchitectureDocs": true,
+        "hasContributingGuide": true,
+        "hasTests": true,
+        "hasCi": true,
+        "hasDeploymentAutomation": true,
+        "hasDependencyManifest": true,
+        "hasDependencyLock": true,
+        "hasSupportedRuntime": true,
+        "hasSecurityPolicy": true,
+        "hasSecretScanningFindings": false,
+        "hasApiEvidence": true,
+        "hasDataStoreEvidence": true
+      },
+      "expected": {
+        "health": 100,
+        "documentation": 100,
+        "documentationConfidence": 1
+      }
+    },
+    {
+      "name": "sample-permit-service",
+      "capability": "Service discovery",
+      "signals": {
+        "repositoryId": 2,
+        "datasetVersion": "synthetic-workshop-v1",
+        "daysSincePush": 10,
+        "archived": false,
+        "hasReadme": true,
+        "hasArchitectureDocs": null,
+        "hasContributingGuide": true,
+        "hasTests": true,
+        "hasCi": true,
+        "hasDeploymentAutomation": true,
+        "hasDependencyManifest": true,
+        "hasDependencyLock": true,
+        "hasSupportedRuntime": true,
+        "hasSecurityPolicy": true,
+        "hasSecretScanningFindings": false,
+        "hasApiEvidence": true,
+        "hasDataStoreEvidence": true
+      },
+      "expected": {
+        "health": 100,
+        "documentation": 100,
+        "documentationConfidence": 0.75
+      }
+    }
+  ],
+  "hypothesis": "Both fictional services mention service discovery. Ask maintainers whether an interface could be reused; shared terminology does not prove consolidation is appropriate.",
+  "nextAction": "Assign a role-based validation owner and compare contracts before proposing a pilot."
+}

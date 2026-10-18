@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OpenGit — evidence-to-action opportunity brief</title>
+    <style>
+      body {
+        font:
+          17px/1.6 system-ui,
+          sans-serif;
+        color: #0f172a;
+        max-width: 850px;
+        margin: 40px auto;
+        padding: 24px;
+      }
+      h1 {
+        color: #1d4ed8;
+        line-height: 1.2;
+      }
+      .notice {
+        border-left: 5px solid #2563eb;
+        background: #eff6ff;
+        padding: 16px;
+      }
+      label {
+        display: block;
+        font-weight: 700;
+        margin-top: 22px;
+      }
+      textarea,
+      input {
+        box-sizing: border-box;
+        width: 100%;
+        border: 1px solid #64748b;
+        border-radius: 6px;
+        padding: 12px;
+        font: inherit;
+      }
+      textarea {
+        min-height: 90px;
+      }
+      @media print {
+        body {
+          margin: 0;
+        }
+        textarea {
+          min-height: 110px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Evidence → validation → next action</h1>
+    <p class="notice">
+      Workshop worksheet, not an application export. Use fictional or approved
+      non-sensitive information only. This page makes no network requests and
+      does not save entries; print to PDF before closing. No automated decision
+      or source-organization change is authorized.
+    </p>
+    <label for="question"
+      >Customer question and intended business outcome</label
+    >
+    <textarea
+      id="question"
+      placeholder="Which capability could we reuse, and why does it matter?"
+    ></textarea>
+    <label for="scope">Approved scope and exclusions</label>
+    <textarea
+      id="scope"
+      placeholder="Public repositories; permitted analysis; explicit exclusions"
+    ></textarea>
+    <label for="evidence">Evidence and provenance</label>
+    <textarea
+      id="evidence"
+      placeholder="Dataset version, immutable commit, evidence ID, path/line, observation, confidence, coverage"
+    ></textarea>
+    <label for="hypothesis">Hypothesis and uncertainty</label>
+    <textarea
+      id="hypothesis"
+      placeholder="Separate observation from inference. What evidence is missing?"
+    ></textarea>
+    <label for="validation">Maintainer validation and disposition</label>
+    <textarea
+      id="validation"
+      placeholder="Pending / accepted / rejected, with rationale and validation evidence"
+    ></textarea>
+    <label for="owner">Accountable owner role</label>
+    <input id="owner" placeholder="Platform lead + service maintainer" />
+    <label for="pilot"
+      >Bounded pilot, baseline, acceptance criteria, and stop conditions</label
+    >
+    <textarea
+      id="pilot"
+      placeholder="One opportunity; measurable baseline; security boundary; explicit approval before any writes"
+    ></textarea>
+    <label for="next">Next action and agreed follow-up</label>
+    <textarea
+      id="next"
+      placeholder="Who validates what, which decision follows, and when the team will reconvene"
+    ></textarea>
+    <p>
+      Independent Apache-2.0 proof of concept. No government endorsement.
+      Recommendations require human review.
+    </p>
+  </body>
+</html>
