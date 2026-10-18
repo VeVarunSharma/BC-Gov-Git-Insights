@@ -67,6 +67,8 @@ The browser still uses the built-in BC Gov fixture.
 - [Demo script: five-minute and fifteen-minute journeys](docs/demo/demo-script.md)
 - [Opportunity brief / workshop worksheet](docs/demo/opportunity-brief.html)
 - [Illustrative evidence record](docs/demo/evidence-example.json)
+- [Screenshots, architecture image, and captioned five-minute slideshow](docs/assets/index.html)
+- [Release evidence and outstanding readiness gates](docs/assets/release-evidence.json)
 - [Provisional accelerator metadata](accelerator.yaml)
 
 Use this as a discovery/account opener, then agree a workshop or bounded pilot.
@@ -74,7 +76,12 @@ It is not a production service or a validated customer outcome. The proposed
 [accelerators catalog](https://github.com/mcaps-microsoft/accelerators-catalog)
 currently returns HTTP 404; metadata is provisional and not catalog-schema
 validated. Independent human rehearsal and cloud deployment are not claimed.
-See the demo script for media capture and release-readiness gates.
+The recording uses generated narration over actual screenshots; it is not a
+live interaction or independent rehearsal. To view captions locally, serve the
+documentation with `python3 -m http.server 8080 --bind 127.0.0.1 --directory docs`
+and open <http://127.0.0.1:8080/assets/index.html>. Download the MP4 for reliable
+seeking on servers without HTTP range support. See the demo script for media
+capture and release-readiness gates.
 
 ## Read-only by design
 

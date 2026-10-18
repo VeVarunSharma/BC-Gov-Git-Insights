@@ -197,8 +197,13 @@ does not establish independent review or a completed recording.
 | [Estate map](../assets/estate-map.png)       | Estate map and candidate relationships                  |
 | [Opportunities](../assets/opportunities.png) | Agentic/reuse opportunity and its caveat                |
 
-For reproduction, use the same filenames under `docs/assets/`. Recording and
-caption files should only be linked after existence and playback verification.
+The [media gallery](../assets/index.html) includes the separate worksheet capture,
+architecture image, [five-minute slideshow](../assets/demo-slideshow.mp4), and
+[caption transcript](../assets/demo-captions.vtt). The slideshow uses generated
+narration over screenshots, not live interaction or human rehearsal. Decode,
+browser playback, downloaded-video seeking, and six caption chapters were checked.
+See [release evidence](../assets/release-evidence.json) for scope and limitations.
+For reproduction, use the same filenames under `docs/assets/`.
 
 1. Record commit SHA, dataset version, browser/version, viewport (for example
    1440×1000), zoom 100%, and UTC capture date in the handoff.

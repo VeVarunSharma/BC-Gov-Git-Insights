@@ -7,9 +7,9 @@ flowchart LR
   F["Built-in demo-data.ts: 12 repositories / target 100"] --> M["Deterministic metrics over synthetic signals"]
   F --> G["Fixture graph entities and relationships"]
   M --> W["Next.js server page and /api/overview"]
-  G --> A["/api/graph: bounded slice"]
+  G --> A["/api/graph: bounded slice for API clients"]
   W --> V["Browser: scorecards, tables, ECharts"]
-  A --> R["React Flow / ELK"]
+  G --> R["Server page passes small fixture graph directly to React Flow / ELK"]
 ```
 
 The server page and API routes import `apps/web/src/lib/demo-data.ts`. The
@@ -90,8 +90,9 @@ nodes. Inferred ministry assignments are candidate-only; inferred edges carry
 confidence and evidence references. Fixture references are illustrative, not
 collected proof.
 
-The graph API accepts a focus, depth 0–4, and limit 1–500. The browser uses graph
-slices and ELK layout; no full-estate scalability or production performance is
+The graph API accepts a focus, depth 0–4, and limit 1–500. The current server page
+passes the small fixture graph directly to the browser's ELK layout, rather than
+fetching that API. No full-estate scalability or production performance is
 claimed. Health, confidence, and coverage are separate: unknown evidence is not
 a failed check. See [methodology](../methodology/evidence-and-scoring.md).
 

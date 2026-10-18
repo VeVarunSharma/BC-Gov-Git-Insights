@@ -1,0 +1,88 @@
+{
+  "recordedAt": "2026-10-18",
+  "implementationCommit": "f321de2fcf096580b452af808d037897844d4e24",
+  "scope": "Local fixture dashboard, workshop samples, and media. Documentation/evidence follow-ups do not establish a cloud deployment or catalog approval.",
+  "readiness": "Demo candidate with packaged media; independent human handoff pending",
+  "environment": {
+    "node": "24.21.0",
+    "pnpm": "10.34.5",
+    "browser": "Chrome 155.0.8059.39",
+    "viewport": "1440x1200; section screenshots include full section height",
+    "reducedMotion": true,
+    "datasetVersion": "demo-2026-08-22",
+    "records": 12,
+    "targetCohort": 100
+  },
+  "localValidation": {
+    "pnpm lint": "Passed",
+    "pnpm typecheck": "Passed",
+    "pnpm test": "Passed: 38 tests; collector and synthesizer have no test files",
+    "pnpm build": "Passed after removing Google Font build-time network dependency",
+    "az bicep build --file infra/main.bicep": "Passed; template compilation only, not Azure validation/deployment",
+    "formatting": "Parent-owned changed text files checked/formatted with existing Prettier. Delegated documentation formatted by its author; full-repository format check not rerun after delegation.",
+    "lockfile": "Repaired using pnpm install --lockfile-only --fix-lockfile --force --registry=https://registry.npmjs.org/. All importer versions and package version keys retained; peer snapshot identities normalized by pnpm. Frozen install passed.",
+    "packageManagerAdvisories": "Existing pnpm 10.33.0 advisories prompted upgrade; advisory check reported no vulnerabilities for pnpm 10.34.5."
+  },
+  "runtimeChecks": {
+    "productionFixtureMode": "PUBLIC_DASHBOARD=true, loopback only",
+    "overviewApi": "HTTP 200; dataset.mode=fixture; 12 records",
+    "dashboard": "12 rendered repository rows; no browser page errors observed",
+    "protectedMode": "PUBLIC_DASHBOARD=false and DEV_AUTH_DISABLED=false; no Easy Auth platform configured",
+    "protectedOverviewApi": "HTTP 401",
+    "protectedGraphApi": "HTTP 401",
+    "healthEndpoint": "Healthy; does not prove external dependencies",
+    "scopeLimit": "Protected denial checked; successful Entra authentication and live RBAC not verified"
+  },
+  "media": {
+    "gallery": "index.html",
+    "screenshots": [
+      "overview.png",
+      "portfolio.png",
+      "estate-map.png",
+      "opportunities.png",
+      "worksheet.png"
+    ],
+    "captureMethod": "Existing Playwright installation and local Chrome; production fixture dashboard on loopback. Worksheet captured separately from static HTML.",
+    "architecture": "architecture.svg",
+    "recording": "demo-slideshow.mp4",
+    "recordingType": "Screenshot slideshow, generated espeak-ng en-us narration, FFmpeg encoding; not interactive screen recording or human rehearsal",
+    "durationSeconds": 300.02322,
+    "captions": "demo-captions.vtt; six chapter transcript cues, also embedded in MP4",
+    "checks": "FFmpeg full decode passed; browser playback and caption loading passed; full-download seek to 285 seconds passed",
+    "limitations": "Full-size screenshots are more legible than video, especially portfolio tables. Generated pronunciation and pacing still require presenter review. Servers without HTTP range support may require MP4 download for seeking."
+  },
+  "workflowEvidence": {
+    "checkedAt": "2026-10-18",
+    "currentBranchCi": "No regular CI run for implementation commit observed; cloud-agent run is not application CI",
+    "historicalCi": {
+      "url": "https://github.com/VeVarunSharma/BC-Gov-Git-Insights/actions/runs/32805264093",
+      "commit": "bdd4601a386719b52acf87d245c946cba2bdbb19",
+      "status": "Success, historical main revision; not this implementation"
+    },
+    "historicalImages": {
+      "url": "https://github.com/VeVarunSharma/BC-Gov-Git-Insights/actions/runs/32805264086",
+      "status": "Success, historical main revision; new images not published or verified"
+    },
+    "infrastructure": "Historical PR compilation runs exist; no protected what-if established for this implementation",
+    "deployment": "No deploy.yml workflow runs returned; no cloud changes attempted"
+  },
+  "securityReview": {
+    "secretScan": "Passed before implementation commit; text and media included",
+    "codeql": "Completed for actions and javascript; zero alerts",
+    "automatedCodeReview": "Built-in review binary unavailable despite tool success heading. Separate read-only specialist review completed; missing release-evidence link fixed and follow-up review reported no remaining high-confidence functional/security issues.",
+    "scopeLimit": "Not a security certification; no live cloud identity/RBAC or full dependency audit claimed"
+  },
+  "catalog": {
+    "url": "https://github.com/mcaps-microsoft/accelerators-catalog",
+    "accessResult": "GitHub API returned 404; catalog may be unavailable or inaccessible",
+    "metadataStatus": "Provisional project schema; not validated for catalog submission"
+  },
+  "outstandingGates": [
+    "Independent five- and fifteen-minute presenter rehearsal and handoff",
+    "Named maintenance/support owner and customer-approved expectations",
+    "Catalog access, actual schema validation, and submission review",
+    "Customer authorization, quotas, budget, identities, retention, and teardown approval before a pilot",
+    "Live ingestion/read-model integration and cloud verification before advertising those capabilities",
+    "Release-specific image publishing, workflow validation, accessibility, and redistribution review"
+  ]
+}
